@@ -2,10 +2,16 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows Desktop
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MordEng", "MordEng\MordEng.vcxproj", "{766CAB1E-D007-43DB-A19C-B3B72C7289D7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D29F7802-24AC-4F10-98A2-0898C1BF8FD6} = {D29F7802-24AC-4F10-98A2-0898C1BF8FD6}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eng", "eng\eng.vcxproj", "{D29F7802-24AC-4F10-98A2-0898C1BF8FD6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Window", "Window\Window.vcxproj", "{ED6FFA41-1CA6-4F24-813E-DBDBF570E5D4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D29F7802-24AC-4F10-98A2-0898C1BF8FD6} = {D29F7802-24AC-4F10-98A2-0898C1BF8FD6}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
