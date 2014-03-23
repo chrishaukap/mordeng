@@ -1,0 +1,14 @@
+
+Goal July 1st, "Black Triangle" 
+Send a cube through the pipeline.  
+Object coord space -> 
+	World coord space -> 
+		Perspective coord space -> 
+			screen
+			
+Tasks:
+(1) Line rendering/clipping algorithm
+(2) Need to understand Quaternions (quat->matrix, matrix->quat, rotations using quaternions)
+(3) determine needs of pipeline/data-model
+(4) code up a camera
+(5) generate matrices for translation/rotations/etc, understand the process.

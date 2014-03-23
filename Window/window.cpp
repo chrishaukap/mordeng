@@ -5,8 +5,9 @@
 #include <assert.h>
 
 #include "window.h"
+#include "clipping.h"
 
-/**********************************************************/
+using namespace mord;
 
 extern int main(int n,char **o);            /* real main (well...) */
 
@@ -38,7 +39,9 @@ void (*frame_function)(void)=NULL;
 void (*handler_function)(int key_code)=NULL;
 void (*idle_function)(void)=NULL;
 
+void line(int *vertex1,int *vertex2,int red,int green,int blue);
 
+#pragma region CALLBACKS
 void handler(int key)                       
 {
    switch(key)
@@ -55,6 +58,16 @@ void handler(int key)
 
 void frame(void)                            
 {
+   int v1[3]={0,0,0};
+   int v2[3]={0,0,0};
+
+   v1[0]=rand()%screen_x_size;             /* coordinates for a random */
+   v1[1]=rand()%screen_y_size;             /* point */
+   v2[0]=rand()%screen_x_size;             /* coordinates for a random */
+   v2[1]=rand()%screen_y_size;             /* point */
+
+   line(v1,v2,rand()%255,rand()%255,rand()%255);
+
    blit();                                
 }
 
@@ -62,7 +75,18 @@ void idle(void)
 {
    frame();
 }
+#pragma endregion 
 
+
+#pragma region ENGINE FUNCTIONS
+
+
+void init_graphics(void)
+{
+   c_buffer=(pixel_ptr)malloc(image_size*pixel_size);
+   if(c_buffer==NULL) 
+      error("(Graphics) Not enough memory.\n");
+}
 
 void init_screen(char *window_title,int size_x,int size_y)
 {
@@ -74,6 +98,8 @@ void init_screen(char *window_title,int size_x,int size_y)
    screen_x_size=size_x;                   /* screen size */
    screen_y_size=size_y;
    image_size=screen_x_size*screen_y_size;
+   
+   ClippingUtils::init_clipping(0,0,screen_x_size-1,screen_y_size-1);
    
    static char szAppName[] = "Environ";
    wnd = CreateWindowEx(WS_EX_CLIENTEDGE,
@@ -94,6 +120,9 @@ void init_screen(char *window_title,int size_x,int size_y)
    pixel_size = GetDeviceCaps( ps.hdc,BITSPIXEL ) / 8;
    if(( pixel_size != 2 ) && ( pixel_size != 3 ) && (pixel_size != 4))
       error( "(Hardware) 16bpp, 24bpp or 32bpp expected." );
+
+   
+   init_graphics();
    
    bmp = CreateCompatibleBitmap( ps.hdc, screen_x_size, screen_y_size );
    SelectObject( mem, bmp );
@@ -160,21 +189,80 @@ void pixel(char* buf_address,int red,int green,int blue)
    }
 }
 
-void blit(void)
-{
-   PAINTSTRUCT ps;
 
-   BeginPaint(wnd,&ps);                    /* store into a bitmap */
-   SetMapMode(ps.hdc,MM_TEXT);                /* blit a bitmap */
-   SetBitmapBits(bmp,image_size*pixel_size,(void*)c_buffer);
-   BitBlt(ps.hdc,0,0,screen_x_size,screen_y_size,mem,0,0,SRCCOPY);
-   EndPaint(wnd,&ps);
+void clear(int red,int green,int blue)
+{
+   int i;
+   for(i=0;i<image_size*pixel_size;i+=pixel_size)
+      pixel(c_buffer+i,red,green,blue);
 }
 
-void close_screen(void)
+void line(int *vertex1,int *vertex2,int red,int green,int blue)
 {
-   DeleteDC(mem);                          
-   DeleteObject(bmp);
+   int inc_ah,inc_al;
+   int i;
+   int *v1,*v2,pos;
+   int dx,dy,long_d,short_d;
+   int d,add_dh,add_dl;
+   int inc_xh,inc_yh,inc_xl,inc_yl;
+   pixel_ptr adr_c=c_buffer;
+   v1=(int*)vertex1;
+   v2=(int*)vertex2;
+
+   if(ClippingUtils::line_x_clipping(&v1,&v2,2))           /* horizontal clipping */
+   {
+      if(ClippingUtils::line_y_clipping(&v1,&v2,2))          /* vertical clipping */
+      {
+         dx=v2[0]-v1[0]; dy=v2[1]-v1[1];          /* ranges */
+
+         if(dx<0){
+            dx=-dx; inc_xh=-1; inc_xl=-1;/* making sure dx and dy >0 */
+         }  
+         else    {       
+            inc_xh=1;  inc_xl=1; /* adjusting increments */
+         }  
+
+         if(dy<0){
+            dy=-dy;inc_yh=-screen_x_size;
+            inc_yl=-screen_x_size;                    /* to get to the neighboring */
+         }                                
+         else    {       
+            inc_yh= screen_x_size;
+            inc_yl= screen_x_size;
+         }
+         if(dx>dy){
+            long_d=dx;short_d=dy;inc_yl=0;
+         }/* long range,&make sure either */
+         else     {
+            long_d=dy;short_d=dx;inc_xl=0;
+         }/* x or y is changed in L case */
+
+         inc_ah=inc_xh+inc_yh;
+         inc_al=inc_xl+inc_yl;                    /* increments for point address */
+
+         d=2*short_d-long_d;                      /* initial value of d */
+         add_dl=2*short_d;                        /* d adjustment for H case */
+         add_dh=2*(short_d-long_d);               /* d adjustment for L case */
+         pos=v1[1]*screen_x_size+v1[0];
+         adr_c+=pos*pixel_size;                /* address of first point */
+         
+         for(i=0;i<=long_d;i++)                   /* for all points in long range */
+         {
+            pixel(adr_c,red,green,blue);         /* ploting a pixel */
+
+            if(d>=0)
+            {
+               d+=add_dh;
+               adr_c+=inc_ah*pixel_size;           /* new in the color-buffer */
+            }                                       /* previous point was H type */
+            else
+            {
+               d+=add_dl;
+               adr_c+=inc_al*pixel_size;           /* new in the color-buffer */
+            }                                       /* previous point was L type */
+         }
+      }
+   }
 }
 
 void init_event_loop(void (*frame)(void),
@@ -229,6 +317,22 @@ void close_event_loop(void)
 }
 
 
+
+int main(int argc, char *argv[])                
+{
+
+   init_screen("3Dgpl3 - Texture", 300, 300);
+   
+   clear(0,0,0); 
+   init_event_loop(frame,handler,idle);    
+   close_screen();
+
+   return(1);
+}
+#pragma endregion
+
+
+#pragma region WINDOWS FUNCTIONS
 long FAR PASCAL WndProc(HWND hWnd,UINT message,
 			WPARAM wParam,LPARAM lParam)
 {
@@ -302,14 +406,22 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
    return(main(n,o));                         /* here, humane way to start */
 }
-
-int main(int argc, char *argv[])                
+void close_screen(void)
 {
-
-   init_screen("3Dgpl3 - Texture", 300, 300);
-   
-   init_event_loop(frame,handler,idle);    /* run event loop */
-   close_screen();
-
-   return(1);
+   DeleteDC(mem);                          
+   DeleteObject(bmp);
 }
+
+
+void blit(void)
+{
+   PAINTSTRUCT ps;
+
+   BeginPaint(wnd,&ps);                    /* store into a bitmap */
+   SetMapMode(ps.hdc,MM_TEXT);                /* blit a bitmap */
+   SetBitmapBits(bmp,image_size*pixel_size,(void*)c_buffer);
+   BitBlt(ps.hdc,0,0,screen_x_size,screen_y_size,mem,0,0,SRCCOPY);
+   EndPaint(wnd,&ps);
+}
+
+#pragma endregion
