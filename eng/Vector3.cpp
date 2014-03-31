@@ -1,73 +1,73 @@
-#include "Vector3D.h"
+#include "Vector3.h"
 #include "math.h"
 #include <assert.h>
 
 
 using namespace mord;
 
-Vector3D::Vector3D(float _x, float _y, float _z) : 
+Vector3::Vector3(float _x, float _y, float _z) : 
    x(_x), y(_y), z(_z)
 {
    computeMagnitude();
 }
 
-Vector3D::Vector3D(const Vector3D& orig){
+Vector3::Vector3(const Vector3& orig){
    *this = orig;
 }
 
-void Vector3D::normalize(){
+void Vector3::normalize(){
    x /= magnitude;
    y /= magnitude;
    z /= magnitude;
    magnitude = 1;
 }
-Vector3D Vector3D::normalize(const Vector3D& rhs){
-   Vector3D ret(rhs);
+Vector3 Vector3::normalize(const Vector3& rhs){
+   Vector3 ret(rhs);
    ret.normalize();
    return ret;
 }
 
-float Vector3D::dot(const Vector3D& rhs){
+float Vector3::dot(const Vector3& rhs){
    return dot(*this, rhs);
 }
 
-float Vector3D::dot(const Vector3D& lhs, const Vector3D& rhs){
+float Vector3::dot(const Vector3& lhs, const Vector3& rhs){
    return lhs.getX() * rhs.getX() +
           lhs.getY() * rhs.getY() +
           lhs.getZ() * rhs.getZ();
 }
 
-Vector3D Vector3D::cross(const Vector3D& rhs){
+Vector3 Vector3::cross(const Vector3& rhs){
    
-   return Vector3D(getY() * rhs.getZ() - getZ() * rhs.getY(),
+   return Vector3(getY() * rhs.getZ() - getZ() * rhs.getY(),
                    getZ() * rhs.getX() - getX() * rhs.getZ(),
                    getX() * rhs.getY() - getY() * rhs.getX());
 }
 
-Vector3D Vector3D::cross(const Vector3D& lhs, const Vector3D& rhs){
-   return Vector3D(lhs.getY() * rhs.getZ() - lhs.getZ() * rhs.getY(),
+Vector3 Vector3::cross(const Vector3& lhs, const Vector3& rhs){
+   return Vector3(lhs.getY() * rhs.getZ() - lhs.getZ() * rhs.getY(),
                    lhs.getZ() * rhs.getX() - lhs.getX() * rhs.getZ(),
                    lhs.getX() * rhs.getY() - lhs.getY() * rhs.getX());
 }
 
-float Vector3D::angleBetweenNormalized(const Vector3D& other) const{
+float Vector3::angleBetweenNormalized(const Vector3& other) const{
    return angleBetweenNormalized(*this, other);
 }
 
-float Vector3D::angleBetweenNormalized(const Vector3D& lhs, const Vector3D& rhs){
+float Vector3::angleBetweenNormalized(const Vector3& lhs, const Vector3& rhs){
    assert(lhs.getMagnitude() == 1.0 && rhs.getMagnitude() == 1.0);
 
    return acos( lhs * rhs );
 }
 
 
-Vector3D Vector3D::operator+(const Vector3D& rhs){
-   return Vector3D(getX() + rhs.getX(), 
+Vector3 Vector3::operator+(const Vector3& rhs){
+   return Vector3(getX() + rhs.getX(), 
                    getY() + rhs.getY(),
                    getZ() + rhs.getZ());
 }
 
-Vector3D& Vector3D::operator+=(const Vector3D& rhs){
+Vector3& Vector3::operator+=(const Vector3& rhs){
    x += rhs.getX();
    y += rhs.getY();
    z += rhs.getZ();
@@ -76,13 +76,13 @@ Vector3D& Vector3D::operator+=(const Vector3D& rhs){
 }
 
 
-Vector3D Vector3D::operator-(const Vector3D& rhs){
-   return Vector3D(getX() - rhs.getX(), 
+Vector3 Vector3::operator-(const Vector3& rhs){
+   return Vector3(getX() - rhs.getX(), 
                    getY() - rhs.getY(),
                    getZ() - rhs.getZ());
 }
 
-Vector3D& Vector3D::operator-=(const Vector3D& rhs){
+Vector3& Vector3::operator-=(const Vector3& rhs){
    x -= rhs.getX();
    y -= rhs.getY();
    z -= rhs.getZ();
@@ -90,13 +90,13 @@ Vector3D& Vector3D::operator-=(const Vector3D& rhs){
    return *this;
 }
 
-Vector3D Vector3D::operator*(float scalar){
-   return Vector3D(getX() * scalar, 
+Vector3 Vector3::operator*(float scalar){
+   return Vector3(getX() * scalar, 
                    getY() * scalar,
                    getZ() * scalar);
 }
 
-Vector3D& Vector3D::operator*=(float scalar){
+Vector3& Vector3::operator*=(float scalar){
    x *= scalar;
    y *= scalar;
    z *= scalar;
@@ -104,33 +104,33 @@ Vector3D& Vector3D::operator*=(float scalar){
    return *this;
 }
 
-float Vector3D::operator*(const Vector3D& rhs){
+float Vector3::operator*(const Vector3& rhs){
    return dot(*this, rhs);
 }
 
-float Vector3D::operator*(const Vector3D& rhs) const{
+float Vector3::operator*(const Vector3& rhs) const{
    return dot(*this, rhs);
 }
 
-void Vector3D::operator=(const Vector3D& rhs){
+void Vector3::operator=(const Vector3& rhs){
    x = rhs.getX();
    y = rhs.getY();
    z = rhs.getZ();
    magnitude = rhs.getMagnitude();
 }
 
-bool Vector3D::operator==(const Vector3D& rhs){
+bool Vector3::operator==(const Vector3& rhs){
    return ( x == rhs.getX() &&
             y == rhs.getY() &&
             z == rhs.getZ() &&
             magnitude == rhs.getMagnitude());
 }
 
-bool Vector3D::operator!=(const Vector3D& rhs){
+bool Vector3::operator!=(const Vector3& rhs){
    return !operator==(rhs);
 }
 
-void Vector3D::computeMagnitude()
+void Vector3::computeMagnitude()
 {
    magnitude = sqrt(pow(x,2) + pow(y,2) + pow(z,2));
 }

@@ -1,6 +1,6 @@
-#include "Matrix.h"
+#include "Matrix3.h"
 
-#include "Vector3D.h"
+#include "Vector3.h"
 #include <assert.h>
 #include <cstdlib>
 #include <stdio.h>
@@ -9,7 +9,7 @@ using namespace mord;
 
 const int size = 3;
 
-Matrix3D::Matrix3D() : values(NULL) {
+Matrix3::Matrix3() : values(NULL) {
    allocateMatrix();
    
    for(int i=0; i<size; ++i)
@@ -17,7 +17,7 @@ Matrix3D::Matrix3D() : values(NULL) {
          values[i][j] = 0;
 }
 
-Matrix3D::Matrix3D(float x1, float y1, float z1,
+Matrix3::Matrix3(float x1, float y1, float z1,
                    float x2, float y2, float z2,
                    float x3, float y3, float z3) : values(NULL) {  
    allocateMatrix();
@@ -27,23 +27,23 @@ Matrix3D::Matrix3D(float x1, float y1, float z1,
    values[2][0] = x3; values[2][1] = y3; values[2][2] = z3;
 }
 
-Matrix3D::Matrix3D(const Vector3D& row1,
-                   const Vector3D& row2,
-                   const Vector3D& row3) : values(NULL) {
-   Matrix3D(row1.getX(), row1.getY(), row1.getZ(),
+Matrix3::Matrix3(const Vector3& row1,
+                 const Vector3& row2,
+                 const Vector3& row3) : values(NULL) {
+   Matrix3(row1.getX(), row1.getY(), row1.getZ(),
             row2.getX(), row2.getY(), row2.getZ(),
             row3.getX(), row3.getY(), row3.getZ());
 }
       
-Matrix3D::Matrix3D(const Matrix3D& m) : values(NULL) {
+Matrix3::Matrix3(const Matrix3& m) : values(NULL) {
    *this = m;
 }
 
-Matrix3D::~Matrix3D(){
+Matrix3::~Matrix3(){
    deleteMatrix();
 }
 
-Matrix3D& Matrix3D::operator= (const Matrix3D& rhs)
+Matrix3& Matrix3::operator= (const Matrix3& rhs)
 {
    deleteMatrix();
    allocateMatrix();
@@ -55,13 +55,13 @@ Matrix3D& Matrix3D::operator= (const Matrix3D& rhs)
    return *this;
 }
 
-void Matrix3D::allocateMatrix(){              
+void Matrix3::allocateMatrix(){              
    values = new float*[size];
    for(int i = 0; i < size; ++i)
       values[i] = new float[size];
 }
 
-void Matrix3D::deleteMatrix(){
+void Matrix3::deleteMatrix(){
          
    if(values != NULL){
       for(int i = 0; i < size; ++i)
@@ -70,7 +70,7 @@ void Matrix3D::deleteMatrix(){
    }
 }
 
-bool Matrix3D::operator==(const Matrix3D& rhs){   
+bool Matrix3::operator==(const Matrix3& rhs){   
    for(int i=0; i<size; ++i)
       for(int j=0; j<size; ++j)
          if(values[j][i] != rhs[j][i])
@@ -78,17 +78,17 @@ bool Matrix3D::operator==(const Matrix3D& rhs){
    return true;
 }
 
-bool Matrix3D::operator!=(const Matrix3D& rhs){
+bool Matrix3::operator!=(const Matrix3& rhs){
    return !operator==(rhs);
 }
 
-Matrix3D Matrix3D::operator* (const Matrix3D& rhs){
-   Matrix3D ret;
-   Matrix3D::mult(ret, *this, rhs);
+Matrix3 Matrix3::operator* (const Matrix3& rhs){
+   Matrix3 ret;
+   Matrix3::mult(ret, *this, rhs);
    return ret;
 }
 
-void Matrix3D::mult(Matrix3D &ret, const Matrix3D& lhs, const Matrix3D& rhs){
+void Matrix3::mult(Matrix3 &ret, const Matrix3& lhs, const Matrix3& rhs){
    
    for(int i=0; i<size; ++i)
       for(int j=0; j<size; ++j) {
@@ -101,14 +101,14 @@ void Matrix3D::mult(Matrix3D &ret, const Matrix3D& lhs, const Matrix3D& rhs){
       }
 }
 
-Matrix3D& Matrix3D::operator*= (const Matrix3D& rhs){
-   Matrix3D tmp;
-   Matrix3D::mult(tmp, *this, rhs);
+Matrix3& Matrix3::operator*= (const Matrix3& rhs){
+   Matrix3 tmp;
+   Matrix3::mult(tmp, *this, rhs);
    *this = tmp;
    return *this;
 }
 
-void Matrix3D::print() const
+void Matrix3::print() const
 {
    for(int i=0; i<size; ++i) {
       for(int j=0; j<size; ++j) 

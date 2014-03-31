@@ -1,9 +1,9 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#ifndef MATRIX3_H
+#define MATRIX3_H
 
 namespace mord{
-   class Vector3D;
-   class Matrix3D{
+   class Vector3;
+   class Matrix3{
       
    private:
       // used for double subscript overloading
@@ -21,16 +21,16 @@ namespace mord{
        };
 
    public:
-      Matrix3D();
-      Matrix3D(float x1, float y1, float z1,
+      Matrix3();
+      Matrix3(float x1, float y1, float z1,
                float x2, float y2, float z2,
                float x3, float y3, float z3);
-      Matrix3D(const Vector3D& row1,
-               const Vector3D& row2,
-               const Vector3D& row3);
+      Matrix3(const Vector3& row1,
+              const Vector3& row2,
+              const Vector3& row3);
       
-      Matrix3D(const Matrix3D& m);
-      ~Matrix3D();
+      Matrix3(const Matrix3& m);
+      ~Matrix3();
                  
       Proxy operator[] (int idx){
          return Proxy(values[idx]);
@@ -38,15 +38,15 @@ namespace mord{
       Proxy operator[] (int idx) const{
          return Proxy(values[idx]);
       }
-      Matrix3D& operator= (const Matrix3D& rhs);
+      Matrix3& operator= (const Matrix3& rhs);
 
-      Matrix3D operator* (const Matrix3D& rhs);
-      static void mult(Matrix3D& ret, const Matrix3D& lhs, const Matrix3D& rhs);
+      Matrix3 operator* (const Matrix3& rhs);
+      static void mult(Matrix3& ret, const Matrix3& lhs, const Matrix3& rhs);
 
-      Matrix3D& operator*= (const Matrix3D& rhs);
+      Matrix3& operator*= (const Matrix3& rhs);
       
-      bool operator==(const Matrix3D& rhs);
-      bool operator!=(const Matrix3D& rhs);
+      bool operator==(const Matrix3& rhs);
+      bool operator!=(const Matrix3& rhs);
  
       void print() const;
    private:
@@ -57,4 +57,4 @@ namespace mord{
    };
 }
 
-#endif //MATRIX_H
+#endif //MATRIX3_H
