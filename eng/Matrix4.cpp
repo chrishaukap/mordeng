@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include <stdio.h>
+#include <math.h>
 
 // TODO: write a generic Matrix class that can handle N dimension so we're not duplicating code
 
@@ -79,12 +80,12 @@ bool Matrix4::operator==(const Matrix4& rhs){
 #define ERROR 0.00001
    for(int i=0; i<size; ++i)
       for(int j=0; j<size; ++j)
-         if(values[j][i]  - rhs[j][i] > ERROR)
-       {
-         float val1 = values[j][i];
-         float val2 = rhs[j][i];
-            return false;
-       }
+         if( fabs(values[j][i]  - rhs[j][i]) > ERROR)
+         {
+            float val1 = values[j][i];
+            float val2 = rhs[j][i];
+               return false;
+         }
    return true;
 }
 
@@ -110,6 +111,21 @@ void Matrix4::mult(Matrix4 &ret, const Matrix4& lhs, const Matrix4& rhs){
          ret[i][j] = total;
       }
 }
+
+Vector4 Matrix4::operator* (const Vector4& rhs)
+{
+   return Matrix4::mult(*this, rhs);
+}
+Vector4 Matrix4::mult(const Matrix4& lhs, const Vector4& rhs)
+{   
+   return Vector4(
+      lhs[0][0] * rhs.getX() + lhs[0][1] * rhs.getY() + lhs[0][2] * rhs.getZ() + lhs[0][3] * rhs.getW(),
+      lhs[1][0] * rhs.getX() + lhs[1][1] * rhs.getY() + lhs[1][2] * rhs.getZ() + lhs[1][3] * rhs.getW(),
+      lhs[2][0] * rhs.getX() + lhs[2][1] * rhs.getY() + lhs[2][2] * rhs.getZ() + lhs[2][3] * rhs.getW(),
+      lhs[3][0] * rhs.getX() + lhs[3][1] * rhs.getY() + lhs[3][2] * rhs.getZ() + lhs[3][3] * rhs.getW()
+   );
+}
+
 
 Matrix4& Matrix4::operator*= (const Matrix4& rhs){
    Matrix4 tmp;

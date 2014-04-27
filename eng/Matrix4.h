@@ -41,6 +41,9 @@ namespace mord{
 
       Matrix4 operator* (const Matrix4& rhs);
       static void mult(Matrix4& ret, const Matrix4& lhs, const Matrix4& rhs);
+      
+      Vector4 operator* (const Vector4& rhs);
+      static Vector4 mult(const Matrix4& lhs, const Vector4& rhs);
 
       Matrix4& operator*= (const Matrix4& rhs);
       

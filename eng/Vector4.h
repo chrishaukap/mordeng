@@ -5,7 +5,7 @@ namespace mord {
 
    class Vector4 {
    public:
-      Vector4(float x, float y, float z);
+      Vector4(float x, float y, float z, float w=0);
       Vector4(const Vector4&);
 
       void normalize();
@@ -36,10 +36,11 @@ namespace mord {
       float getX() const {return x;}
       float getY() const {return y;}
       float getZ() const {return z;}
+      float getW() const {return w;}
       float getMagnitude() const {return magnitude;}
    private:
       void computeMagnitude();
-      float x,y,z;
+      float x,y,z,w;
       float magnitude;
    };
 }

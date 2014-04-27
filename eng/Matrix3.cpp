@@ -18,8 +18,8 @@ Matrix3::Matrix3() : values(NULL) {
 }
 
 Matrix3::Matrix3(float x1, float y1, float z1,
-                   float x2, float y2, float z2,
-                   float x3, float y3, float z3) : values(NULL) {  
+                 float x2, float y2, float z2,
+                 float x3, float y3, float z3) : values(NULL) {  
    allocateMatrix();
    
    values[0][0] = x1; values[0][1] = y1; values[0][2] = z1;
@@ -31,8 +31,8 @@ Matrix3::Matrix3(const Vector3& row1,
                  const Vector3& row2,
                  const Vector3& row3) : values(NULL) {
    Matrix3(row1.getX(), row1.getY(), row1.getZ(),
-            row2.getX(), row2.getY(), row2.getZ(),
-            row3.getX(), row3.getY(), row3.getZ());
+           row2.getX(), row2.getY(), row2.getZ(),
+           row3.getX(), row3.getY(), row3.getZ());
 }
       
 Matrix3::Matrix3(const Matrix3& m) : values(NULL) {

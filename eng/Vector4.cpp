@@ -1,13 +1,14 @@
 #include "Vector4.h"
-#include "math.h"
+#include <math.h>
 #include <assert.h>
 
 // TODO: write a generic Vector class that can handle N dimension so we're not duplicating code
+//         we also also need a 4D vector when multiplying matrices... 
 
 using namespace mord;
 
-Vector4::Vector4(float _x, float _y, float _z) : 
-   x(_x), y(_y), z(_z)
+Vector4::Vector4(float _x, float _y, float _z, float _w) : 
+   x(_x), y(_y), z(_z), w(_w)
 {
    computeMagnitude();
 }
@@ -20,6 +21,7 @@ void Vector4::normalize(){
    x /= magnitude;
    y /= magnitude;
    z /= magnitude;
+   w /= magnitude;
    magnitude = 1;
 }
 Vector4 Vector4::normalize(const Vector4& rhs){
@@ -121,10 +123,12 @@ void Vector4::operator=(const Vector4& rhs){
 }
 
 bool Vector4::operator==(const Vector4& rhs){
-   return ( x == rhs.getX() &&
-            y == rhs.getY() &&
-            z == rhs.getZ() &&
-            magnitude == rhs.getMagnitude());
+#define ERROR 0.00001
+   return ( fabs(x - rhs.getX()) <= ERROR &&
+            fabs(y - rhs.getY()) <= ERROR &&
+            fabs(z - rhs.getZ()) <= ERROR &&
+            fabs(w - rhs.getW()) <= ERROR &&
+            fabs(magnitude - rhs.getMagnitude()) <= ERROR);
 }
 
 bool Vector4::operator!=(const Vector4& rhs){

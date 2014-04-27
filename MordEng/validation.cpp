@@ -1,4 +1,5 @@
 #include "Vector3.h"
+#include "Vector4.h"
 #include "Matrix3.h"
 #include "Matrix4.h"
 #include "pipeline.h"
@@ -86,6 +87,12 @@ int testVectors()
 #define PI 3.14159f
 #define DEG2RAD(deg) ((deg) * PI / 180.0f)
 
+static void printVec(const Vector4& v)
+{
+   cout << v.getX() << " " << v.getY() << " " 
+        << v.getZ() << " " << v.getW();
+}
+
 int testMatrices()
 {
 #pragma region basic_tests
@@ -166,39 +173,57 @@ int testMatrices()
 #pragma region pipeline_tests
    {
       Matrix4 mT;
-      Vector3 transVec(1.5,1.0,1.5);
-      genTransMatrixFromEmptyMatrix(mT, transVec);
-      Matrix4 mTVal (1,0,0,1.5,
-                     0,1,0,1,
-                     0,0,1,1.5,
-                     0,0,0,1);
-
-      assert(mTVal == mT);
-               
-      Matrix4 mRotY;
-      genRotMatrixAboutY(mRotY, DEG2RAD(90));
-      Matrix4 mRotYVal (cos(DEG2RAD(90)), 0, sin(DEG2RAD(90)),0,
-                        0,1,0,0,
-                        -sin(DEG2RAD(90)),0, cos(DEG2RAD(90)),0,
+      {
+         Vector3 transVec(1.5,1.0,1.5);
+         genTranslationMatrixFromEmptyMatrix(mT, transVec);
+         Matrix4 mTVal (1,0,0,1.5,
+                        0,1,0,1,
+                        0,0,1,1.5,
                         0,0,0,1);
-      assert(mRotY == mRotYVal);
+         assert(mTVal == mT);
+      }        
+
+      Matrix4 mRotY;
+      {
+         genRotationMatrixAboutY(mRotY, DEG2RAD(90));
+         Matrix4 mRotYVal (cos(DEG2RAD(90)), 0, sin(DEG2RAD(90)),0,
+                           0,1,0,0,
+                           -sin(DEG2RAD(90)),0, cos(DEG2RAD(90)),0,
+                           0,0,0,1);
+         assert(mRotY == mRotYVal);
+      }
 
       Matrix4 mRotX;
-      genRotMatrixAboutX(mRotX, DEG2RAD(180));
+      {
+         genRotationMatrixAboutX(mRotX, DEG2RAD(180));
      
-      Matrix4 mRotXVal (1,0,0,0,
-                        0,cos(DEG2RAD(180)), -sin(DEG2RAD(180)),0,
-                        0,sin(DEG2RAD(180)), cos(DEG2RAD(180)),0,
-                        0,0,0,1);
-      assert(mRotX == mRotXVal);
+         Matrix4 mRotXVal (1,0,0,0,
+                           0,cos(DEG2RAD(180)), -sin(DEG2RAD(180)),0,
+                           0,sin(DEG2RAD(180)), cos(DEG2RAD(180)),0,
+                           0,0,0,1);
+         assert(mRotX == mRotXVal);
+      }
 
       Matrix4 resultMatrix;
-      resultMatrix = mT * mRotX * mRotY;
-      Matrix4 resultMatrixVal ( 0,0,1,1.5,
-                              0,-1,0,1.0,
-                        1,0,0,1.5,
-                        0,0,0,1);
-     assert(resultMatrix == resultMatrixVal);
+      {
+         resultMatrix = mT * mRotX * mRotY;
+         Matrix4 resultMatrixVal ( 0,0,1,1.5,
+                                   0,-1,0,1.0,
+                                   1,0,0,1.5,
+                                   0,0,0,1);
+         assert(resultMatrix == resultMatrixVal);
+         resultMatrix.print();
+      }
+
+      {
+         Vector4 pVal(1.5,0,1.5,1);
+
+         Vector4 pOriginal(0,1,0,1);
+         Vector4 p = resultMatrix * pOriginal;
+         printVec(p);
+         assert(p == pVal);
+      }
+
    }
 #pragma endregion 
    return 0;
